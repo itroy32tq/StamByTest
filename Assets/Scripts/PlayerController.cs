@@ -1,3 +1,4 @@
+using Photon.Pun;
 using System;
 using System.Collections;
 using UnityEngine;
@@ -9,12 +10,15 @@ namespace Net
     public class PlayerController : MonoBehaviour
     {
         private Controls _controls;
+        private bool _isFirstPlayer;
 
         [SerializeField] private Transform _bulletPool;
+        [SerializeField] private string _bulletPrefName;
 
         [SerializeField] private Rigidbody2D _rigidbody;
         [SerializeField] private CapsuleCollider2D _capsuleCollider;
         [SerializeField] private ProjectileController _bulletPref;
+        [SerializeField] private PhotonView _photonView;
 
         [Space, SerializeField, Range(1f, 10f)] private float _moveSpeed = 1f;
         public float MoveSpeed => _moveSpeed;
@@ -37,6 +41,8 @@ namespace Net
 
         private void Start()
         {
+            _isFirstPlayer = name.Contains("1");
+
 
             _controls.Player.Fire.performed += OnFire;
         }
@@ -60,7 +66,8 @@ namespace Net
 
         private IEnumerator Fire()
         {
-            var bullet = Instantiate(_bulletPref, _bulletPool);
+            //var bullet = Instantiate(_bulletPref, _bulletPool);
+            var bullet = PhotonNetwork.Instantiate(_bulletPrefName, _bulletPool.position, new Quaternion());
             bullet.transform.position = transform.TransformPoint(_gunPosition);
             yield return new WaitForSeconds(_attackDelay);
         }

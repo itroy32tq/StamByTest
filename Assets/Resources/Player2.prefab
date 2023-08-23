@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 4095028330246542175}
   - component: {fileID: 4095028330246542169}
   - component: {fileID: 4095028330246542168}
+  - component: {fileID: -2504566686140918706}
   m_Layer: 0
   m_Name: Player2
   m_TagString: Untagged
@@ -136,12 +137,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f2455b9c9698cc4f95a9e6719212bfc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _bulletPool: {fileID: 0}
+  _bulletPool: {fileID: 6557776781027447645, guid: 1913a4ab6dd26f1478d1cd5f309d66ee, type: 3}
+  _bulletPrefName: Bullet
   _rigidbody: {fileID: 4095028330246542169}
   _capsuleCollider: {fileID: 4095028330246542175}
   _bulletPref: {fileID: 0}
-  _moveSpeed: 1
+  _photonView: {fileID: -2504566686140918706}
+  _moveSpeed: 7.27
   _maxSpeed: 10
   _health: 5
   _attackDelay: 0.4
   _gunPosition: {x: 1.03, y: 0}
+--- !u!114 &-2504566686140918706
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4095028330246542148}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
