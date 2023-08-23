@@ -141,13 +141,13 @@ MonoBehaviour:
   _bulletPrefName: Bullet
   _rigidbody: {fileID: 4095028330246542169}
   _capsuleCollider: {fileID: 4095028330246542175}
-  _bulletPref: {fileID: 0}
+  _bulletPref: {fileID: 4727769514034060325, guid: ab00511131d33354a8424aebccfe4417, type: 3}
   _photonView: {fileID: -6214873485679604326}
   _moveSpeed: 8.23
   _maxSpeed: 10
   _health: 5
   _attackDelay: 0.4
-  _gunPosition: {x: 0.64, y: 0}
+  _gunPosition: {x: 0.73, y: 0}
 --- !u!114 &-6214873485679604326
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -166,7 +166,8 @@ MonoBehaviour:
   Synchronization: 3
   OwnershipTransfer: 0
   observableSearch: 2
-  ObservedComponents: []
+  ObservedComponents:
+  - {fileID: 4095028330246542168}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0

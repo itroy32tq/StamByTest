@@ -1,13 +1,14 @@
 using Photon.Pun;
 using System;
 using System.Collections;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using static UnityEngine.InputSystem.InputAction;
 
 namespace Net 
 {
-    public class PlayerController : MonoBehaviour
+    public class PlayerController : MonoBehaviour, IPunObservable
     {
         private Controls _controls;
         private bool _isFirstPlayer;
@@ -26,7 +27,7 @@ namespace Net
         [SerializeField] private float _maxSpeed = 10f;
 
         [Space, SerializeField, Range(1f, 50f)] private float _health = 5f;
-        public float Health => _health;
+        public float Health { get => _health; set => _health = value; }
 
         [Space, SerializeField, Range(0.1f, 1f)] private float _attackDelay = 0.4f;
 
@@ -41,10 +42,20 @@ namespace Net
 
         private void Start()
         {
-            _isFirstPlayer = name.Contains("1");
-
 
             _controls.Player.Fire.performed += OnFire;
+        }
+
+        public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+        {
+            if (stream.IsWriting)
+            {
+                stream.SendNext(PlayerData.Create(this));
+            }
+            else
+            {
+                ((PlayerData)stream.ReceiveNext()).Set(this);
+            }
         }
 
         private void OnFire(CallbackContext context)
@@ -61,19 +72,21 @@ namespace Net
             _health -= bullet.Damage;
             Destroy(bullet.gameObject);
 
-            if (_health < 0f) Debug.Log($"Player with name {name} is dead");
+            if (_health < 0f) Debugger.Log($"Player with name {name} is dead");
         }
 
         private IEnumerator Fire()
         {
             //var bullet = Instantiate(_bulletPref, _bulletPool);
-            var bullet = PhotonNetwork.Instantiate(_bulletPrefName, _bulletPool.position, new Quaternion());
-            bullet.transform.position = transform.TransformPoint(_gunPosition);
+            var bullet = PhotonNetwork.Instantiate(_bulletPrefName, transform.TransformPoint(_gunPosition), new Quaternion());
+            //bullet.transform.parent = _bulletPool;
             yield return new WaitForSeconds(_attackDelay);
         }
 
         private void FixedUpdate()
         {
+            if (!_photonView.IsMine) return;
+
             Vector2 direction = _controls.Player.Movement.ReadValue<Vector2>();
             
             _rigidbody.velocity += direction * Time.deltaTime * _moveSpeed;
