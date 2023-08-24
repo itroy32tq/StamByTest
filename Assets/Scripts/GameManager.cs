@@ -40,7 +40,7 @@ namespace Net
 
             Spawn();
 
-            //PhotonPeer.RegisterType(typeof(PlayerData), 100, PlayerData.SerializePlayerData, PlayerData.DeSerializePlayerData);
+            PhotonPeer.RegisterType(typeof(PlayerData), 100, PlayerData.SerializePlayerData, PlayerData.DeSerializePlayerData);
         }
 
         private async void Spawn()

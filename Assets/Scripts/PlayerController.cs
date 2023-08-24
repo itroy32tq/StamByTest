@@ -39,8 +39,14 @@ namespace Net
         [Space, SerializeField] private TMP_Text _nickName;
         public string NickName { get => _nickName.text; set => _nickName.text = value; }
 
+        [SerializeField] private GameObject _gun;
+        private bool _isGun = false;
+        public bool IsGun { get => _isGun; set => _isGun = value; }
+
         public void Awake()
         {
+            _gun.SetActive(false);
+
             if (photonView.IsMine)
             {
                 LocalPlayerInstance = gameObject;
@@ -57,27 +63,32 @@ namespace Net
 
         public void Start()
         {
-
+            
             _controls.Player.Fire.performed += OnFire;
             
         }
 
         public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
         {
-            /*if (stream.IsWriting)
+            
+            if (stream.IsWriting)
             {
-                stream.SendNext(PlayerData.Create(this));
+                stream.SendNext(new PlayerData(this));
             }
             else
             {
                 ((PlayerData)stream.ReceiveNext()).Set(this);
-            }*/
+            }
+
+
         }
 
         private void OnFire(CallbackContext context)
         {
             if (!photonView.IsMine) return;
-
+            
+            _isGun = true;
+            if (_isGun) _gun.SetActive(true);
             StartCoroutine(Fire());
         }
 
@@ -104,14 +115,18 @@ namespace Net
 
         private void FixedUpdate()
         {
-            if (!photonView.IsMine) return;
+            
+
+            if (!photonView.IsMine)
+            {
+                if (_isGun) _gun.SetActive(_isGun);
+                return;
+            } 
 
             Vector2 direction = _controls.Player.Movement.ReadValue<Vector2>();
             
             _rigidbody.velocity += direction * Time.deltaTime * _moveSpeed;
             _rigidbody.velocity = Vector2.ClampMagnitude(_rigidbody.velocity, _maxSpeed);
-
-
         }
 
         private void OnDrawGizmos()

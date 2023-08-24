@@ -46,35 +46,32 @@ namespace Net
 
     public struct PlayerData
     {
-        public float posX;
-        public float posY;
-        public float hp;
+        
+        private float hp;
+        private bool isGun;
 
-        public static PlayerData Create(PlayerController player)
+
+        public PlayerData(PlayerController player)
         {
-            return new PlayerData
-            {
-                posX = player.transform.position.x,
-                posY = player.transform.position.y,
-                hp = player.Health
-            };
+            
+            hp = player.Health;
+            isGun = player.IsGun;
         }
-
+      
         public void Set(PlayerController player)
         { 
-            Vector2 pos = player.transform.position;
-            pos.x = posX; pos.y = posY;
+            
             player.Health = hp;
+            player.IsGun = isGun;
         }
 
         public static byte[] SerializePlayerData(object data)
         {
-            var player = (PlayerData)data;
-            var array = new List<byte>(12);
+            var playerData = (PlayerData)data;
+            var array = new List<byte>(5);
 
-            array.AddRange(BitConverter.GetBytes(player.posX));
-            array.AddRange(BitConverter.GetBytes(player.posY));
-            array.AddRange(BitConverter.GetBytes(player.hp));
+            array.AddRange(BitConverter.GetBytes(playerData.hp));
+            array.AddRange(BitConverter.GetBytes(playerData.isGun));
 
             return array.ToArray();
         }
@@ -83,12 +80,11 @@ namespace Net
         {
             PlayerData pl = new PlayerData
             {
-                posX = BitConverter.ToSingle(data, 0),
-                posY = BitConverter.ToSingle(data, 4),
-                hp = BitConverter.ToSingle(data, 8)
+
+                hp = BitConverter.ToSingle(data, 0),
+                isGun = BitConverter.ToBoolean(data, 4)
 
             };
-            Debugger.Log(pl.posX);
             return pl;
         }
     }
