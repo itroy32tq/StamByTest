@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 6557776781027447645}
   - component: {fileID: 6557776781027447634}
   - component: {fileID: 6557776781027447635}
-  - component: {fileID: 6557776781027447644}
   m_Layer: 0
   m_Name: EventSystem
   m_TagString: Untagged
@@ -79,33 +78,3 @@ MonoBehaviour:
   m_DeselectOnBackgroundClick: 1
   m_PointerBehavior: 0
   m_CursorLockBehavior: 0
---- !u!114 &6557776781027447644
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6557776781027447632}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 097324f1206608345acfbb9beb10bb85, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _playerPrefName: Player
-  _quit:
-    m_Name: Quit
-    m_Type: 1
-    m_ExpectedControlType: Button
-    m_Id: 4b0fe140-8b8c-49c4-a729-97c34d6647b5
-    m_Processors: 
-    m_Interactions: Hold
-    m_SingletonActionBindings:
-    - m_Name: 
-      m_Id: 624a51b7-6e1f-44aa-9918-08c56a8b95f9
-      m_Path: <Keyboard>/escape
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Quit
-      m_Flags: 0
-    m_Flags: 0

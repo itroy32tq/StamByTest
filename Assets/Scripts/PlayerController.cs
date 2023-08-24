@@ -1,6 +1,7 @@
 using Photon.Pun;
 using System;
 using System.Collections;
+using TMPro;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -8,10 +9,12 @@ using static UnityEngine.InputSystem.InputAction;
 
 namespace Net 
 {
-    public class PlayerController : MonoBehaviour, IPunObservable
+    public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
     {
         private Controls _controls;
-        private bool _isFirstPlayer;
+
+        [Tooltip("The local player instance. Use this to know if the local player is represented in the Scene")]
+        public static GameObject LocalPlayerInstance;
 
         [SerializeField] private Transform _bulletPool;
         [SerializeField] private string _bulletPrefName;
@@ -19,7 +22,7 @@ namespace Net
         [SerializeField] private Rigidbody2D _rigidbody;
         [SerializeField] private CapsuleCollider2D _capsuleCollider;
         [SerializeField] private ProjectileController _bulletPref;
-        [SerializeField] private PhotonView _photonView;
+        //private PhotonView _photonView;
 
         [Space, SerializeField, Range(1f, 10f)] private float _moveSpeed = 1f;
         public float MoveSpeed => _moveSpeed;
@@ -31,35 +34,50 @@ namespace Net
 
         [Space, SerializeField, Range(0.1f, 1f)] private float _attackDelay = 0.4f;
 
-        [Space, SerializeField] Vector2 _gunPosition;
+        [Space, SerializeField] private Vector2 _gunPosition;
 
-        
-        private void OnEnable()
+        [Space, SerializeField] private TMP_Text _nickName;
+        public string NickName { get => _nickName.text; set => _nickName.text = value; }
+
+        public void Awake()
+        {
+            if (photonView.IsMine)
+            {
+                LocalPlayerInstance = gameObject;
+                NickName = PhotonNetwork.NickName;
+            }
+            DontDestroyOnLoad(gameObject);
+        }
+
+        public override void OnEnable()
         {
             _controls = new Controls();
             _controls.Player.Enable();
         }
 
-        private void Start()
+        public void Start()
         {
 
             _controls.Player.Fire.performed += OnFire;
+            
         }
 
         public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
         {
-            if (stream.IsWriting)
+            /*if (stream.IsWriting)
             {
                 stream.SendNext(PlayerData.Create(this));
             }
             else
             {
                 ((PlayerData)stream.ReceiveNext()).Set(this);
-            }
+            }*/
         }
 
         private void OnFire(CallbackContext context)
         {
+            if (!photonView.IsMine) return;
+
             StartCoroutine(Fire());
         }
 
@@ -70,6 +88,7 @@ namespace Net
             if (bullet != null || bullet.transform.parent != transform) return;//todo сделать нормально без автоубивания
 
             _health -= bullet.Damage;
+
             Destroy(bullet.gameObject);
 
             if (_health < 0f) Debugger.Log($"Player with name {name} is dead");
@@ -85,7 +104,7 @@ namespace Net
 
         private void FixedUpdate()
         {
-            if (!_photonView.IsMine) return;
+            if (!photonView.IsMine) return;
 
             Vector2 direction = _controls.Player.Movement.ReadValue<Vector2>();
             

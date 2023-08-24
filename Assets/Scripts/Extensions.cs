@@ -19,10 +19,10 @@ namespace Net
 #if UNITY_EDITOR
             Debug.Log("Console not found!");
             return;
-#endif
+#elif !UNITY_EDITOR
             _console = GameObject.FindObjectsOfType<TMP_Text>().FirstOrDefault(t => t.name == "Console");
-
-        } 
+#endif
+        }
 
         public static void Log(object message)
         {
@@ -31,6 +31,15 @@ namespace Net
             Debug.Log(message);
 #elif !UNITY_EDITOR
             _console.text += message;
+#endif
+        }
+        public static void LogFormat(string format, params object[] args)
+        {
+
+#if UNITY_EDITOR
+            Debug.LogFormat(format, args);
+#elif !UNITY_EDITOR
+            _console.text += format;
 #endif
         }
     }
@@ -76,7 +85,7 @@ namespace Net
             {
                 posX = BitConverter.ToSingle(data, 0),
                 posY = BitConverter.ToSingle(data, 4),
-                hp = BitConverter.ToSingle(data,8)
+                hp = BitConverter.ToSingle(data, 8)
 
             };
             Debugger.Log(pl.posX);

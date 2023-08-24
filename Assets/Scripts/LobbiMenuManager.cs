@@ -12,6 +12,8 @@ namespace Net
         [SerializeField] private Button _createRoomButton;
         [SerializeField] private Button _joinRoomButton;
         [SerializeField] private Button _quitButton;
+        [SerializeField] private TMP_InputField _createInput;
+        [SerializeField] private TMP_InputField _joinInput;
 
         private void Start()
         {
@@ -19,37 +21,28 @@ namespace Net
             _joinRoomButton.onClick.AddListener(OnJoinRoom);
             _quitButton.onClick.AddListener(OnQuit);
 
-#if UNITY_EDITOR
-            PhotonNetwork.NickName = "1";
-#elif !UNITY_EDITOR
-            PhotonNetwork.NickName = "2";
-#endif
+
+            PhotonNetwork.NickName = "Player_" + UnityEngine.Random.Range(1, 5);
+            PhotonNetwork.GameVersion = "1";
             PhotonNetwork.AutomaticallySyncScene = true;
-            PhotonNetwork.GameVersion = "0.0.1";
-            PhotonNetwork.ConnectUsingSettings();
+
         }
 
-        public override void OnConnectedToMaster()
-        {
 
-            Debugger.Log("Ready for connecting!");
+        private void OnCreateRoom()
+        {
+            PhotonNetwork.CreateRoom(_createInput.text, new Photon.Realtime.RoomOptions { MaxPlayers = 2 });
+        }
+
+        private void OnJoinRoom()
+        {
+            PhotonNetwork.JoinRoom(_joinInput.text);
         }
 
         public override void OnJoinedRoom()
         {
-            PhotonNetwork.LoadLevel("Game");
             Debugger.Log("Load scene Game");
-        }
-
-
-        private void OnJoinRoom()
-        {
-            PhotonNetwork.JoinRandomRoom();
-        }
-
-        private void OnCreateRoom()
-        {
-            PhotonNetwork.CreateRoom(null, new Photon.Realtime.RoomOptions {MaxPlayers = 2 });
+            PhotonNetwork.LoadLevel("Game");
         }
 
         private void OnQuit()
