@@ -11,7 +11,6 @@ namespace Net
     public class GameManager : MonoBehaviourPunCallbacks
     {
 
-        [SerializeField] private string _playerPrefName;
         [SerializeField] private GameObject _plPref;
 
         [Tooltip("The local player instance. Use this to know if the local player is represented in the Scene")]
