@@ -1,7 +1,5 @@
-using ExitGames.Client.Photon.StructWrapping;
 using Photon.Pun;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 
@@ -36,11 +34,12 @@ namespace Net
         public void TryShoot()
         {
             float currentTime = Time.time;
-
+ 
             if (currentTime - lastShootTime > shootInterval)
             {
                 lastShootTime = currentTime;
-                if (ShootEvent != null) ShootEvent();   // Fire the "ShootEvent" event.
+                state = SpineBeginnerBodyState.Fire;
+                //ShootEvent?.Invoke();   // Fire the "ShootEvent" event.   // Fire the "ShootEvent" event.
             }
         }
 
@@ -95,7 +94,6 @@ namespace Net
                     transform.Translate((d * Time.deltaTime) * Vector3.down);
                     yield return null;
                 }
-                transform.localPosition = pos;
             }
 
             state = SpineBeginnerBodyState.Idle;
@@ -123,7 +121,8 @@ namespace Net
     {
         Idle,
         Running,
-        Jumping
+        Jumping,
+        Fire
     }
 }
 

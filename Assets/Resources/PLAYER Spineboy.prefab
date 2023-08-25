@@ -5271,7 +5271,7 @@ MonoBehaviour:
   state: 0
   facingLeft: 0
   currentSpeed: 0
-  shootInterval: 0.12
+  shootInterval: 0.3
 --- !u!114 &6404551976991281171
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5289,7 +5289,7 @@ MonoBehaviour:
   _bulletPref: {fileID: 3218082405346327488, guid: ab00511131d33354a8424aebccfe4417, type: 3}
   _rigidbody: {fileID: 7940121499145424441}
   _boxCollider: {fileID: 869814377732661918}
-  _moveSpeed: 9.2
+  _moveSpeed: 8.22
   _maxSpeed: 10
   _health: 5
   _attackDelay: 0.4
