@@ -5272,6 +5272,8 @@ MonoBehaviour:
   facingLeft: 0
   currentSpeed: 0
   shootInterval: 0.3
+  _gunPosition: {x: 2.94, y: 4.12}
+  _bulletPref: {fileID: 3218082405346327488, guid: ab00511131d33354a8424aebccfe4417, type: 3}
 --- !u!114 &6404551976991281171
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5285,15 +5287,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   model: {fileID: 103256484885780583}
-  _bulletPool: {fileID: 0}
-  _bulletPref: {fileID: 3218082405346327488, guid: ab00511131d33354a8424aebccfe4417, type: 3}
   _rigidbody: {fileID: 7940121499145424441}
   _boxCollider: {fileID: 869814377732661918}
   _moveSpeed: 8.22
   _maxSpeed: 10
   _health: 5
-  _attackDelay: 0.4
-  _gunPosition: {x: 2.94, y: 2.91}
   _nickName: {fileID: 1125355296643426525}
 --- !u!114 &6911964071640146343
 MonoBehaviour:

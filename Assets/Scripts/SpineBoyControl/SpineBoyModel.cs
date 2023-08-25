@@ -18,6 +18,8 @@ namespace Net
 
         [Header("Balance")]
         public float shootInterval = 0.12f;
+        [Space, SerializeField] private Vector2 _gunPosition;
+        [SerializeField] private GameObject _bulletPref;
         #endregion
 
         float lastShootTime;
@@ -38,9 +40,30 @@ namespace Net
             if (currentTime - lastShootTime > shootInterval)
             {
                 lastShootTime = currentTime;
+                //todo стрельба через стейт передается плохо, но не знаю как быстро исправить
                 state = SpineBeginnerBodyState.Fire;
-                //ShootEvent?.Invoke();   // Fire the "ShootEvent" event.   // Fire the "ShootEvent" event.
+                StartCoroutine(Fire());
+                
             }
+        }
+        private IEnumerator Fire()
+        {
+
+
+            if (facingLeft)
+            {
+                GameObject obj = PhotonNetwork.Instantiate(_bulletPref.name, transform.TransformPoint(new Vector2(-_gunPosition.x, _gunPosition.y)), new Quaternion());
+                obj.GetComponent<ProjectileController>().SetDirection(Vector3.left);
+            }
+            else
+            {
+                GameObject obj = PhotonNetwork.Instantiate(_bulletPref.name, transform.TransformPoint(_gunPosition), new Quaternion());
+                obj.GetComponent<ProjectileController>().SetDirection(Vector3.right);
+            }
+
+
+
+            yield return new WaitForSeconds(shootInterval);
         }
 
         public void StartAim()
@@ -114,6 +137,11 @@ namespace Net
                 Debug.Log(state);
 
             }
+        }
+        private void OnDrawGizmos()
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawSphere(_gunPosition, 0.2f);
         }
     }
 

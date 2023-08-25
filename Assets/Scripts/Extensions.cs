@@ -48,30 +48,25 @@ namespace Net
     {
         
         private float hp;
-        private bool isGun;
-
 
         public PlayerData(PlayerController player)
         {
             
             hp = player.Health;
-            isGun = player.IsGun;
         }
       
         public void Set(PlayerController player)
         { 
             
             player.Health = hp;
-            player.IsGun = isGun;
         }
 
         public static byte[] SerializePlayerData(object data)
         {
             var playerData = (PlayerData)data;
-            var array = new List<byte>(5);
+            var array = new List<byte>(4);
 
             array.AddRange(BitConverter.GetBytes(playerData.hp));
-            array.AddRange(BitConverter.GetBytes(playerData.isGun));
 
             return array.ToArray();
         }
@@ -82,7 +77,6 @@ namespace Net
             {
 
                 hp = BitConverter.ToSingle(data, 0),
-                isGun = BitConverter.ToBoolean(data, 4)
 
             };
             return pl;
