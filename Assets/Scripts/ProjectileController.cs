@@ -7,8 +7,7 @@ namespace Net
     public class ProjectileController : MonoBehaviour
     {
   
-        private Vector3 _direction;
-        public Vector2 Direction { get => _direction; set => _direction = value; }
+        [SerializeField] private int _direction;
 
         [SerializeField, Range(1f, 20f)] private float _moveSpeed = 3f;
         public float MoveSpeed => _moveSpeed;
@@ -21,8 +20,8 @@ namespace Net
 
         private void Start()
         {
+            
             StartCoroutine(OnDie());
-
         }
 
         private IEnumerator OnDie()
@@ -32,11 +31,7 @@ namespace Net
         }
         private void Update()
         {
-           transform.position += _direction * _moveSpeed * Time.deltaTime;
-        }
-        public void SetDirection(Vector2 vector)
-        {
-            _direction = vector;
+           transform.position += _direction * _moveSpeed * Time.deltaTime * Vector3.left;
         }
     }
 }

@@ -13,9 +13,8 @@ GameObject:
   - component: {fileID: 4727769514034060325}
   - component: {fileID: 3492819110000501370}
   - component: {fileID: 1020352029244202004}
-  - component: {fileID: 9214334404340565817}
   m_Layer: 0
-  m_Name: Bullet
+  m_Name: BulletLeft
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -100,6 +99,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61d806f39793a2b46a9b116787810e00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _direction: 1
   _moveSpeed: 8.69
   _damage: 2.1
   _lifeTime: 7
@@ -135,23 +135,7 @@ MonoBehaviour:
   OwnershipTransfer: 0
   observableSearch: 0
   ObservedComponents:
-  - {fileID: 9214334404340565817}
+  - {fileID: 0}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
---- !u!114 &9214334404340565817
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3218082405346327488}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SynchronizePosition: 1
-  m_SynchronizeRotation: 0
-  m_SynchronizeScale: 0
-  m_UseLocal: 1

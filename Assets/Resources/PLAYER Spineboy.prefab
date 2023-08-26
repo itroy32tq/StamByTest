@@ -5273,7 +5273,8 @@ MonoBehaviour:
   currentSpeed: 0
   shootInterval: 0.3
   _gunPosition: {x: 2.94, y: 4.12}
-  _bulletPref: {fileID: 3218082405346327488, guid: ab00511131d33354a8424aebccfe4417, type: 3}
+  _bulletPrefL: {fileID: 3218082405346327488, guid: ab00511131d33354a8424aebccfe4417, type: 3}
+  _bulletPrefR: {fileID: 3218082405346327488, guid: 29cfbb8b5c86bd746a63d2fdf31f246f, type: 3}
 --- !u!114 &6404551976991281171
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -19,7 +19,8 @@ namespace Net
         [Header("Balance")]
         public float shootInterval = 0.12f;
         [Space, SerializeField] private Vector2 _gunPosition;
-        [SerializeField] private GameObject _bulletPref;
+        [SerializeField] private GameObject _bulletPrefL;
+        [SerializeField] private GameObject _bulletPrefR;
         #endregion
 
         float lastShootTime;
@@ -46,23 +47,29 @@ namespace Net
                 
             }
         }
+
+        public void GetFacingModel(ref Vector3 vector)
+        {
+         
+            Debug.Log(facingLeft);
+            if (facingLeft) vector = Vector2.left;
+            else vector = Vector2.right;
+
+        }
+
         private IEnumerator Fire()
         {
 
-
+            var vector = _gunPosition;
             if (facingLeft)
             {
-                GameObject obj = PhotonNetwork.Instantiate(_bulletPref.name, transform.TransformPoint(new Vector2(-_gunPosition.x, _gunPosition.y)), new Quaternion());
-                obj.GetComponent<ProjectileController>().SetDirection(Vector3.left);
+                vector.x = -_gunPosition.x;
+                PhotonNetwork.Instantiate(_bulletPrefL.name, transform.TransformPoint(vector), new Quaternion());
             }
-            else
+            else 
             {
-                GameObject obj = PhotonNetwork.Instantiate(_bulletPref.name, transform.TransformPoint(_gunPosition), new Quaternion());
-                obj.GetComponent<ProjectileController>().SetDirection(Vector3.right);
+                PhotonNetwork.Instantiate(_bulletPrefR.name, transform.TransformPoint(vector), new Quaternion());
             }
-
-
-
             yield return new WaitForSeconds(shootInterval);
         }
 

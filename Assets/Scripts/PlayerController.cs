@@ -13,6 +13,7 @@ namespace Net
     {
         private Controls _controls;
 
+        [Header("Components")]
         [SerializeField]  private SpineBoyModel model;
 
         [Tooltip("The local player instance. Use this to know if the local player is represented in the Scene")]
@@ -98,8 +99,7 @@ namespace Net
 
             if (_health < 0f) Debugger.Log($"Player with name {name} is dead");
         }
-
-
+   
         private void FixedUpdate()
         {
 
