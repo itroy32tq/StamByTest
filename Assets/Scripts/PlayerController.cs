@@ -5,6 +5,7 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 using static UnityEngine.InputSystem.InputAction;
 
 namespace Net 
@@ -30,8 +31,16 @@ namespace Net
         [Space, SerializeField, Range(1f, 50f)] private float _health = 5f;
         public float Health { get => _health; set => _health = value; }
 
+
+
+        #region Canvas
         [Space, SerializeField] private TMP_Text _nickName;
         public string NickName { get => _nickName.text; set => _nickName.text = value; }
+        [SerializeField]  private Image bar;
+        private float fill;
+        private float fill_max;
+
+        #endregion
 
         public void Awake()
         {
@@ -52,12 +61,13 @@ namespace Net
 
         public void Start()
         {
-            
+            fill_max = Health;
+            fill = 1f;
             _controls.Player.Fire.performed += OnFire;
             _controls.Player.Jump.performed += OnJump;
 
         }
-
+     
         private void OnJump(CallbackContext context)
         {
             if (!photonView.IsMine) return;
@@ -71,10 +81,14 @@ namespace Net
             if (stream.IsWriting)
             {
                 stream.SendNext(new PlayerData(this));
+                stream.SendNext(NickName);
+                stream.SendNext(fill);
             }
             else
             {
                 ((PlayerData)stream.ReceiveNext()).Set(this);
+                NickName = (string)stream.ReceiveNext();
+                fill = (float)stream.ReceiveNext();
             }
 
         }
@@ -87,15 +101,20 @@ namespace Net
 
         }
 
-        private void OnTriggerEnter(Collider other)
+        private void OnTriggerEnter2D(Collider2D other)
         {
+            
             var bullet = other.GetComponent<ProjectileController>();
 
-            if (bullet != null || bullet.transform.parent != transform) return;//todo сделать нормально без автоубивания
+            Debug.Log(bullet.name);
+            Debug.Log(_health);
 
             _health -= bullet.Damage;
+            Debug.Log(_health);
 
-            Destroy(bullet.gameObject);
+            bar.fillAmount = fill;
+            fill = _health / fill;
+
 
             if (_health < 0f) Debugger.Log($"Player with name {name} is dead");
         }

@@ -1,6 +1,7 @@
 using ExitGames.Client.Photon;
 using Photon.Pun;
 using Photon.Realtime;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -11,6 +12,8 @@ namespace Net
     public class GameManager : MonoBehaviourPunCallbacks
     {
 
+        public static GameManager instance;
+
         [SerializeField] private GameObject _plPref;
 
         [Tooltip("The local player instance. Use this to know if the local player is represented in the Scene")]
@@ -18,6 +21,9 @@ namespace Net
 
         [SerializeField] private InputAction _quit;
 
+        private List<PlayerController> _players = new List<PlayerController>();
+
+        #region UNITY
         public override void OnEnable()
         {
             _quit.Enable();
@@ -26,6 +32,8 @@ namespace Net
 
         private void Awake()
         {
+            instance = this;
+
             if (photonView.IsMine)
             {
                 LocalPlayerInstance = gameObject;
@@ -42,15 +50,41 @@ namespace Net
             PhotonPeer.RegisterType(typeof(PlayerData), 100, PlayerData.SerializePlayerData, PlayerData.DeSerializePlayerData);
         }
 
+        private void OnDestroy()
+        {
+            _quit.performed -= OnQuit;
+            _quit.Disable();
+        }
+        #endregion
+
         private async void Spawn()
         {
             await Task.Delay(System.TimeSpan.FromSeconds(1f));
 
-            Vector2 pos = new(Random.Range(-5, 5), 1);
-            GameObject GO = PhotonNetwork.Instantiate(_plPref.name, pos, new Quaternion());
+            Vector2 pos = new(Random.Range(-13, 13), -3);
+            PlayerController player = PhotonNetwork.Instantiate(_plPref.name, pos, new Quaternion()).GetComponent<PlayerController>();
+            _players.Add(player);
             
         }
+        public void SetDamagePlayer(PlayerController player, float damage)
+        {
+            int index = _players.FindIndex(x => player);
+            if (index != -1)
+            { 
+                PlayerController pl = _players[index];
+                pl.Health -= damage;
+            }
+        }
 
+        #region PUN CALLBACKS
+        public override void OnDisconnected(DisconnectCause cause)
+        {
+            SceneManager.LoadScene(1);
+        }
+        public override void OnLeftRoom()
+        {
+            PhotonNetwork.Disconnect();
+        }
 
         public override void OnPlayerEnteredRoom(Player newPlayer)
         {
@@ -72,11 +106,8 @@ namespace Net
             Application.Quit();   
 #endif
         }
-        private void OnDestroy()
-        {
-            _quit.performed -= OnQuit;
-            _quit.Disable();
-        }
+        #endregion
+       
     }
 }
 

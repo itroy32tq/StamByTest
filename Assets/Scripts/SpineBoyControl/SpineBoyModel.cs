@@ -13,14 +13,15 @@ namespace Net
         public SpineBeginnerBodyState state;
         public bool facingLeft;
 
+        [SerializeField] private PhotonView _photonView;
+
         [Range(-1f, 1f)]
         public float currentSpeed;
 
         [Header("Balance")]
         public float shootInterval = 0.12f;
         [Space, SerializeField] private Vector2 _gunPosition;
-        [SerializeField] private GameObject _bulletPrefL;
-        [SerializeField] private GameObject _bulletPrefR;
+        [SerializeField] private GameObject _bulletPref;
         #endregion
 
         float lastShootTime;
@@ -41,36 +42,26 @@ namespace Net
             if (currentTime - lastShootTime > shootInterval)
             {
                 lastShootTime = currentTime;
-                //todo стрельба через стейт передается плохо, но не знаю как быстро исправить
-                state = SpineBeginnerBodyState.Fire;
-                StartCoroutine(Fire());
                 
+                _photonView.RPC("Fire", RpcTarget.AllViaServer);
+
             }
         }
 
-        public void GetFacingModel(ref Vector3 vector)
-        {
-         
-            Debug.Log(facingLeft);
-            if (facingLeft) vector = Vector2.left;
-            else vector = Vector2.right;
-
-        }
-
-        private IEnumerator Fire()
+        [PunRPC]
+        public void Fire()
         {
 
             var vector = _gunPosition;
-            if (facingLeft)
-            {
-                vector.x = -_gunPosition.x;
-                PhotonNetwork.Instantiate(_bulletPrefL.name, transform.TransformPoint(vector), new Quaternion());
-            }
-            else 
-            {
-                PhotonNetwork.Instantiate(_bulletPrefR.name, transform.TransformPoint(vector), new Quaternion());
-            }
-            yield return new WaitForSeconds(shootInterval);
+            var dir = Vector2.left;
+            if (facingLeft) vector.x = -_gunPosition.x;
+            else dir = Vector2.right;
+            
+            GameObject bullet = Instantiate(_bulletPref, transform.TransformPoint(vector), Quaternion.identity);
+            bullet.GetComponent<ProjectileController>().InitializeBullet(_photonView.Owner, dir);
+
+            if (ShootEvent != null) ShootEvent();
+
         }
 
         public void StartAim()
@@ -135,14 +126,11 @@ namespace Net
             {
                 stream.SendNext(state);
                 stream.SendNext(facingLeft);
-                Debug.Log(state);
             }
             else
             {
                 state = (SpineBeginnerBodyState) stream.ReceiveNext();
                 facingLeft = (bool)stream.ReceiveNext();
-                Debug.Log(state);
-
             }
         }
         private void OnDrawGizmos()
@@ -156,8 +144,7 @@ namespace Net
     {
         Idle,
         Running,
-        Jumping,
-        Fire
+        Jumping
     }
 }
 

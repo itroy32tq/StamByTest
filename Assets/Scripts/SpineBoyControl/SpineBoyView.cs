@@ -72,26 +72,6 @@ namespace Net
             Animation nextAnimation;
 
             // Add conditionals to not interrupt transient animations.
-            if (newModelState == SpineBeginnerBodyState.Fire)
-            {
-                TrackEntry shootTrack = skeletonAnimation.AnimationState.SetAnimation(1, shoot, false);
-                shootTrack.AttachmentThreshold = 1f;
-                shootTrack.MixDuration = 0f;
-                skeletonAnimation.state.AddEmptyAnimation(1, 0.5f, 0.1f);
-
-                // Play the aim animation on track 2 to aim at the mouse target.
-                TrackEntry aimTrack = skeletonAnimation.AnimationState.SetAnimation(2, aim, false);
-                aimTrack.AttachmentThreshold = 1f;
-                aimTrack.MixDuration = 0f;
-                skeletonAnimation.state.AddEmptyAnimation(2, 0.5f, 0.1f);
-
-                gunSource.pitch = GetRandomPitch(gunsoundPitchOffset);
-                gunSource.Play();
-                //gunParticles.randomSeed = (uint)Random.Range(0, 100);
-                gunParticles.Play();
-                return;
-            }
-
             if (previousViewState == SpineBeginnerBodyState.Jumping && newModelState != SpineBeginnerBodyState.Jumping)
             {
                 PlayFootstepSound();

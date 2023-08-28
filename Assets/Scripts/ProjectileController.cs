@@ -1,3 +1,5 @@
+using Photon.Pun;
+using Photon.Realtime;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,9 +8,9 @@ namespace Net
 {
     public class ProjectileController : MonoBehaviour
     {
-  
-        [SerializeField] private int _direction;
 
+
+        [SerializeField] private Rigidbody2D _rigidbody;
         [SerializeField, Range(1f, 20f)] private float _moveSpeed = 3f;
         public float MoveSpeed => _moveSpeed;
         
@@ -18,21 +20,25 @@ namespace Net
         [SerializeField, Range(1f, 10f)] private float _lifeTime = 7f;
         public float LifeTime => _lifeTime;
 
+        public Player Owner { get; private set; }
+
         private void Start()
         {
-            
-            StartCoroutine(OnDie());
+            Destroy(gameObject, _lifeTime);
         }
 
-        private IEnumerator OnDie()
-        { 
-            yield return new WaitForSeconds(_lifeTime);
+        public void InitializeBullet(Player owner, Vector2 originalDirection)
+        {
+            Owner = owner;
+
+            _rigidbody.velocity = originalDirection * _moveSpeed;
+        }
+
+        public void OnCollisionEnter2D(Collision2D collision)
+        {
             Destroy(gameObject);
         }
-        private void Update()
-        {
-           transform.position += _direction * _moveSpeed * Time.deltaTime * Vector3.left;
-        }
+
     }
 }
 
