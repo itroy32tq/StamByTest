@@ -16,7 +16,7 @@ namespace Net
         public SpineBoyModel model;
         public SkeletonAnimation skeletonAnimation;
 
-        public AnimationReferenceAsset run, idle, aim, shoot, jump;
+        public AnimationReferenceAsset run, idle, aim, shoot, jump, deth;
         public EventDataReferenceAsset footstepEvent;
 
         [Header("Audio")]
@@ -34,8 +34,7 @@ namespace Net
         {
             if (skeletonAnimation == null) return;
             model.ShootEvent += PlayShoot;
-            model.StartAimEvent += StartPlayingAim;
-            model.StopAimEvent += StopPlayingAim;
+            model.DethEvent += Deth;
             skeletonAnimation.AnimationState.Event += HandleEvent;
         }
 
@@ -128,10 +127,13 @@ namespace Net
 
             gunSource.pitch = GetRandomPitch(gunsoundPitchOffset);
             gunSource.Play();
-            //gunParticles.randomSeed = (uint)Random.Range(0, 100);
+            //gunParticles.randomSeed = (uint)Random._range(0, 100);
             gunParticles.Play();
         }
-
+        public void Deth()
+        {
+            skeletonAnimation.AnimationState.SetAnimation(0, deth, false);
+        }
         public void StartPlayingAim()
         {
             // Play the aim animation on track 2 to aim at the mouse target.

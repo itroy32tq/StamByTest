@@ -1,4 +1,5 @@
 using Photon.Pun;
+using Photon.Pun.Demo.PunBasics;
 using Spine.Unity.Examples;
 using System;
 using System.Collections;
@@ -31,15 +32,20 @@ namespace Net
         [Space, SerializeField, Range(1f, 50f)] private float _health = 5f;
         public float Health { get => _health; set => _health = value; }
 
+        private int _coinCount = 0;
+        public int CoinCount { get => _coinCount; set => _coinCount = value; }
 
+        public string StickName { get; set; }
 
         #region Canvas
         [Space, SerializeField] private TMP_Text _nickName;
         public string NickName { get => _nickName.text; set => _nickName.text = value; }
-        [SerializeField]  private Image bar;
+        [SerializeField] private Image HealthBar;
+        [SerializeField] private Image CoinBar;
         private float fill;
         private float fill_max;
-
+        private float fill_coin;
+        private float fill_max_coin;
         #endregion
 
         public void Awake()
@@ -62,9 +68,14 @@ namespace Net
         public void Start()
         {
             fill_max = Health;
+            fill_max_coin = GameManager.Instance.LevelCoinCaunt;
             fill = 1f;
+            fill_coin = 0f;
+            CoinBar.fillAmount = fill_coin;
             _controls.Player.Fire.performed += OnFire;
             _controls.Player.Jump.performed += OnJump;
+            GameManager.Instance.AddPlayer(this);
+
 
         }
      
@@ -82,13 +93,11 @@ namespace Net
             {
                 stream.SendNext(new PlayerData(this));
                 stream.SendNext(NickName);
-                stream.SendNext(fill);
             }
             else
             {
                 ((PlayerData)stream.ReceiveNext()).Set(this);
                 NickName = (string)stream.ReceiveNext();
-                fill = (float)stream.ReceiveNext();
             }
 
         }
@@ -101,33 +110,40 @@ namespace Net
 
         }
 
-        private void OnTriggerEnter2D(Collider2D other)
+
+        [PunRPC]
+        public void OnDeth()
+        {
+            model.TryDeth();
+        }
+
+        public void UpdateHelthBar()
         {
             
-            var bullet = other.GetComponent<ProjectileController>();
-
-            Debug.Log(bullet.name);
-            Debug.Log(_health);
-
-            _health -= bullet.Damage;
-            Debug.Log(_health);
-
-            bar.fillAmount = fill;
-            fill = _health / fill;
-
-
-            if (_health < 0f) Debugger.Log($"Player with name {name} is dead");
+            fill = _health / fill_max;
+            HealthBar.fillAmount = fill;
         }
-   
+
+        public void UpdateCoinBar()
+        {
+            
+            fill_coin = _coinCount / fill_max_coin;
+            CoinBar.fillAmount = fill_coin;
+        }
+
         private void FixedUpdate()
         {
 
-            if (!photonView.IsMine)
+            if (!photonView.IsMine /*|| PhotonNetwork.PlayerList.Length < 2*/)
             {
                 return;
-            } 
-
-            Vector2 direction = _controls.Player.Movement.ReadValue<Vector2>();
+            }
+            Vector2 direction;
+#if UNITY_EDITOR
+            direction = _controls.Player.Movement.ReadValue<Vector2>();
+#elif UNITY_ANDROID
+         direction = AndroidIosInput.GetJoystickValue(photonView.OwnerActorNr.ToString());   
+#endif
 
             model.TryMove(direction.normalized.x);
             _rigidbody.velocity += direction * Time.deltaTime * _moveSpeed;
@@ -137,6 +153,7 @@ namespace Net
         private void OnDestroy()
         {
             _controls.Player.Fire.performed -= OnFire;
+            _controls.Player.Fire.performed -= OnJump;
             _controls.Player.Disable();
         }
     }

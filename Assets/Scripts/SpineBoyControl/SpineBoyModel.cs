@@ -26,13 +26,21 @@ namespace Net
 
         float lastShootTime;
         public event System.Action ShootEvent;  // Lets other scripts know when Spineboy is shooting. Check C# Documentation to learn more about events and delegates.
-        public event System.Action StartAimEvent;   // Lets other scripts know when Spineboy is aiming.
-        public event System.Action StopAimEvent;   // Lets other scripts know when Spineboy is no longer aiming.
+        public event System.Action DethEvent;
+    
 
         #region API
         public void TryJump()
         {
             StartCoroutine(JumpRoutine());
+        }
+
+        public void TryDeth()
+        {
+
+            _photonView.RPC("Deth", RpcTarget.AllViaServer);
+
+            
         }
 
         public void TryShoot()
@@ -63,15 +71,10 @@ namespace Net
             if (ShootEvent != null) ShootEvent();
 
         }
-
-        public void StartAim()
+        [PunRPC]
+        public void Deth()
         {
-            if (StartAimEvent != null) StartAimEvent();   // Fire the "StartAimEvent" event.
-        }
-
-        public void StopAim()
-        {
-            if (StopAimEvent != null) StopAimEvent();   // Fire the "StopAimEvent" event.
+            if (DethEvent != null && _photonView.IsMine) DethEvent();
         }
 
         public void TryMove(float speed)
@@ -102,7 +105,7 @@ namespace Net
                 Vector3 pos = transform.localPosition;
                 const float jumpTime = 1.2f;
                 const float half = jumpTime * 0.5f;
-                const float jumpPower = 20f;
+                const float jumpPower = 30f;
                 for (float t = 0; t < half; t += Time.deltaTime)
                 {
                     float d = jumpPower * (half - t);

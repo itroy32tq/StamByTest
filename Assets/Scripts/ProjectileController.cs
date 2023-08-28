@@ -34,8 +34,14 @@ namespace Net
             _rigidbody.velocity = originalDirection * _moveSpeed;
         }
 
-        public void OnCollisionEnter2D(Collision2D collision)
+        public void OnTriggerEnter2D(Collider2D other)
         {
+            var pl = other.GetComponent<PhotonView>();
+
+            if (pl!=null && pl.Owner == Owner) return;
+
+            GameManager.Instance.SetDamagePlayer(pl, _damage);
+
             Destroy(gameObject);
         }
 
