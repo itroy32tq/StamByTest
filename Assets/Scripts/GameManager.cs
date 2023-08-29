@@ -8,6 +8,8 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using static UnityEngine.InputSystem.InputAction;
 
 namespace Net 
 {
@@ -21,6 +23,7 @@ namespace Net
         [SerializeField] TMP_Text _console;
         [SerializeField] GameObject _finishPanel;
         [SerializeField] TMP_Text finishText;
+        [SerializeField] private Button _exitGame;
 
         [Tooltip("The local player instance. Use this to know if the local player is represented in the Scene")]
         public static GameObject LocalPlayerInstance;
@@ -56,6 +59,7 @@ namespace Net
         private void Start()
         {
 
+            _exitGame.onClick.AddListener(OnExit);
             Spawn();
 
             PhotonPeer.RegisterType(typeof(PlayerData), 100, PlayerData.SerializePlayerData, PlayerData.DeSerializePlayerData);
@@ -149,7 +153,15 @@ namespace Net
         {
             Debug.LogFormat("Player {0} left room", otherPlayer.NickName);
         }
-
+        private void OnExit()
+        {
+            PhotonNetwork.LeaveRoom();
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#elif !UNITY_EDITOR
+            Application.Quit();   
+#endif            
+        }
         private void OnQuit(InputAction.CallbackContext context)
         {
             PhotonNetwork.LeaveRoom();

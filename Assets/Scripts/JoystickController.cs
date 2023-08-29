@@ -16,7 +16,7 @@ public class JoystickController : MonoBehaviour, IDragHandler, IEndDragHandler
     Transform _joystickTransform;
     void Start()
     {
-        //В начале работы необходимо зарегестрировать джойстик
+    
 #if UNITY_EDITOR
         gameObject.SetActive(false);
 #endif
