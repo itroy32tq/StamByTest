@@ -8,4 +8,4 @@ The first full experience of working with the Photon module and organizing multi
 - building projects for Android
 
 The execution time was limited + I collected all the possible bugs of the modules described above)). Therefore, the physics itself turned out to be weak, in the future I plan to work on improving it.
-Unfortunately, the company did not provide feedback, which in my opinion is bad practice
+Unfortunately, the company did not provide feedback.
