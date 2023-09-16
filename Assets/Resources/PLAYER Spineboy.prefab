@@ -5399,8 +5399,14 @@ MonoBehaviour:
   model: {fileID: 103256484885780583}
   _rigidbody: {fileID: 7091839551468942999}
   _boxCollider: {fileID: 7804012752528748108}
-  _moveSpeed: 8.6
-  _maxSpeed: 10
+  LayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  Velocity: {x: 0, y: 0}
+  MinGroundNormalY: 0.65
+  GravityModifier: 1
+  _moveSpeed: 5
+  _jampForce: 7
   _health: 15
   _nickName: {fileID: 1125355296643426525}
   HealthBar: {fileID: 2005547770636519887}
@@ -5445,7 +5451,7 @@ Rigidbody2D:
   m_Mass: 3
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
@@ -5480,7 +5486,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 3.33}
+  m_Offset: {x: 0, y: 3.6}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -5491,7 +5497,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 3.27, y: 6.5}
+  m_Size: {x: 3.3, y: 6.5}
   m_EdgeRadius: 0
 --- !u!70 &7546734040493712032
 CapsuleCollider2D:
@@ -5506,8 +5512,8 @@ CapsuleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 3.5}
-  m_Size: {x: 6, y: 7}
+  m_Offset: {x: 0, y: 3.2}
+  m_Size: {x: 3.78, y: 6.47}
   m_Direction: 0
 --- !u!1 &4859623572326341899
 GameObject:

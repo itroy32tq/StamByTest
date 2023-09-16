@@ -100,25 +100,7 @@ namespace Net
 
             state = SpineBeginnerBodyState.Jumping;
 
-            // Fake jumping.
-            {
-                Vector3 pos = transform.localPosition;
-                const float jumpTime = 1.2f;
-                const float half = jumpTime * 0.5f;
-                const float jumpPower = 30f;
-                for (float t = 0; t < half; t += Time.deltaTime)
-                {
-                    float d = jumpPower * (half - t);
-                    transform.Translate((d * Time.deltaTime) * Vector3.up);
-                    yield return null;
-                }
-                for (float t = 0; t < half; t += Time.deltaTime)
-                {
-                    float d = jumpPower * t;
-                    transform.Translate((d * Time.deltaTime) * Vector3.down);
-                    yield return null;
-                }
-            }
+            yield return new WaitForSeconds(1.2f);
 
             state = SpineBeginnerBodyState.Idle;
         }

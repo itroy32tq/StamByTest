@@ -3,6 +3,7 @@ using Photon.Pun.Demo.PunBasics;
 using Spine.Unity.Examples;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -24,10 +25,24 @@ namespace Net
         [SerializeField] private Rigidbody2D _rigidbody;
         [SerializeField] private BoxCollider2D _boxCollider;
 
+        public LayerMask LayerMask;
+        public Vector2 Velocity;
+        public float MinGroundNormalY = 0.65f;
+        public float GravityModifier = 1f;
+
+        private Vector2 targetVelocity;
+        private bool grounded;
+        private Vector2 groundNormal;
+        private ContactFilter2D contactFilter;
+        private RaycastHit2D[] hitBuffer = new RaycastHit2D[16];
+        private List<RaycastHit2D> hitBufferList = new List<RaycastHit2D>();
+        private const float minMoveDistance = 0.001f;
+        private const float shellRadius = 0.01f;
+
         [Space, SerializeField, Range(1f, 10f)] private float _moveSpeed = 1f;
         public float MoveSpeed => _moveSpeed;
-        
-        [SerializeField] private float _maxSpeed = 10f;
+
+        [Space, SerializeField, Range(1f, 6f)] private float _jampForce = 6f;
 
         [Space, SerializeField, Range(1f, 50f)] private float _health = 5f;
         public float Health { get => _health; set => _health = value; }
@@ -70,10 +85,18 @@ namespace Net
             fill_max = Health;
             fill_max_coin = GameManager.Instance.LevelCoinCaunt;
             fill = 1f;
+
             fill_coin = 0f;
             CoinBar.fillAmount = fill_coin;
+
             _controls.Player.Fire.performed += OnFire;
             _controls.Player.Jump.performed += OnJump;
+
+            contactFilter.useTriggers = false;
+            contactFilter.SetLayerMask(LayerMask);
+            contactFilter.useLayerMask = true;
+
+
             GameManager.Instance.AddPlayer(this);
 
 
@@ -82,8 +105,14 @@ namespace Net
         private void OnJump(CallbackContext context)
         {
             if (!photonView.IsMine) return;
+            
+            if (grounded)
+            {
+                Velocity.y = _jampForce;
+                model.TryJump();
 
-            model.TryJump();
+            }
+            
         }
 
         public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
@@ -131,6 +160,21 @@ namespace Net
             CoinBar.fillAmount = fill_coin;
         }
 
+        private void Update()
+        {
+            if (!photonView.IsMine /*|| PhotonNetwork.PlayerList.Length < 2*/)
+            {
+                return;
+            }
+
+#if UNITY_EDITOR
+            targetVelocity = _controls.Player.Movement.ReadValue<Vector2>();
+#elif UNITY_ANDROID
+            targetVelocity = AndroidIosInput.GetJoystickValue(photonView.OwnerActorNr.ToString());   
+#endif    
+
+        }
+
         private void FixedUpdate()
         {
 
@@ -138,16 +182,64 @@ namespace Net
             {
                 return;
             }
-            Vector2 direction;
-#if UNITY_EDITOR
-            direction = _controls.Player.Movement.ReadValue<Vector2>();
-#elif UNITY_ANDROID
-         direction = AndroidIosInput.GetJoystickValue(photonView.OwnerActorNr.ToString());   
-#endif
 
-            model.TryMove(direction.normalized.x);
-            _rigidbody.velocity += direction * Time.deltaTime * _moveSpeed;
-            _rigidbody.velocity = Vector2.ClampMagnitude(_rigidbody.velocity, _maxSpeed);
+            Velocity += GravityModifier * Time.deltaTime * Physics2D.gravity;
+            Velocity.x = targetVelocity.x;
+
+            grounded = false;
+
+            Vector2 deltaPosition = Velocity * Time.deltaTime;
+            Vector2 moveAlongGround = new(groundNormal.y, -groundNormal.x);
+            Vector2 move = moveAlongGround * deltaPosition.x * _moveSpeed;
+            
+            Movement(move, false);
+
+            move = Vector2.up * deltaPosition.y;
+
+            Movement(move, true);
+
+            model.TryMove(Velocity.normalized.x);
+        }
+
+        private void Movement(Vector2 move, bool yMovement)
+        { 
+            float distance = move.magnitude;
+
+            if (distance > minMoveDistance)
+            {
+                int count = _rigidbody.Cast(move, contactFilter, hitBuffer, distance + shellRadius);
+                hitBufferList.Clear();
+
+                for (int i = 0; i < count; i++)
+                {
+                    hitBufferList.Add(hitBuffer[i]);
+                }
+
+                for (int i = 0; i < hitBufferList.Count; i++)
+                {
+                    
+                    Vector2 currentNormal = hitBufferList[i].normal;
+                    if (currentNormal.y > MinGroundNormalY)
+                    { 
+                        grounded = true;
+                        if (yMovement)
+                        {
+                            groundNormal = currentNormal;
+                            currentNormal.x = 0;
+                        }
+                    }
+                    float projection = Vector2.Dot(Velocity, currentNormal);
+
+                    if (projection < 0)
+                    {
+                        Velocity -= projection * currentNormal;
+                    }
+
+                    float modifiedDistance = hitBufferList[i].distance - shellRadius;
+                    distance = modifiedDistance < distance ? modifiedDistance : distance;
+                }
+            }
+            _rigidbody.position += move.normalized * distance;
         }
 
         private void OnDestroy()
